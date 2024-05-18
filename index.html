@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Openings Moe</title>
+    <style type="text/css">
+      body {
+        width: 100%;
+        height: 100%;
+        background-color: #202020;
+        margin: 0;
+      }
+
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <iframe
+      id="openingsMoeIframe"
+      src="https://openings.moe/"
+      width="100%"
+      height="100%"
+    ></iframe>
+
+    <script src="webOSTVjs-1.2.10/webOSTV.js" charset="utf-8"></script>
+    <script src="webOSTVjs-1.2.10/webOSTV-dev.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      // Sample code for calling LS2 API
+      webOS.service.request("luna://com.palm.systemservice", {
+        method: "clock/getTime",
+        parameters: {},
+        onSuccess: function (args) {
+          console.log("UTC:", args.utc);
+        },
+        onFailure: function (args) {
+          console.log("Failed to getTime");
+        },
+      });
+
+      // Function to forward keyboard events to the iframe and handle specific keys
+      function forwardEventToIframe(event) {
+        const iframe = document.getElementById("openingsMoeIframe");
+        if (iframe && iframe.contentWindow) {
+          if (
+            event.code === "MediaPlayPause" ||
+            event.keyCode === 19 ||
+            event.keyCode == 404
+          ) {
+            // Key code 19 is for the play/pause key 404 green button
+            iframe.contentWindow.postMessage(
+              {
+                type: "toggle-play-pause",
+              },
+              "*"
+            );
+          } else if (event.keyCode === 415 || event.keyCode == 405) {
+            // Key code 415 is for the play button 405 yellow button
+            iframe.contentWindow.postMessage(
+              {
+                type: "play-video",
+              },
+              "*"
+            );
+          } else if (event.keyCode === 178 || event.keyCode == 413) {
+            // Key code 178 is for the pause key
+            iframe.contentWindow.postMessage(
+              {
+                type: "pause-video",
+              },
+              "*"
+            );
+          } else if ((event.keyCode === 417) | (event.keyCode == 406)) {
+            // Key code 417 is for the next button 406 blue button
+            iframe.contentWindow.postMessage(
+              {
+                type: "get-new-video",
+              },
+              "*"
+            );
+          } else if (event.keyCode === 412 || event.keyCode == 403) {
+            // Key code 412 is for the back button 403 red button
+            iframe.contentWindow.postMessage(
+              {
+                type: "go-back",
+              },
+              "*"
+            );
+          } else {
+            iframe.contentWindow.postMessage(
+              {
+                type: "keyboard-event",
+                key: event.key,
+                keyCode: event.keyCode,
+                code: event.code,
+                ctrlKey: event.ctrlKey,
+                shiftKey: event.shiftKey,
+                altKey: event.altKey,
+                metaKey: event.metaKey,
+              },
+              "*"
+            );
+          }
+        }
+      }
+
+      // Listen for keydown events on the document
+      document.addEventListener("keydown", forwardEventToIframe);
+
+      // Inject script into iframe to handle play/pause, get new video, and go back messages
+      // Function to inject the script into the iframe
+      function injectScriptIntoIframe() {
+        const iframe = document.getElementById("openingsMoeIframe");
+        // Access the content window of the iframe
+        var iframeContent = iframe.contentWindow || iframe.contentDocument;
+
+        // Access the document inside the iframe
+        var iframeDocument = iframeContent.document || iframeContent;
+
+        // Find the element with id "menubutton" inside the iframe
+        var elementToRemove = iframeDocument.getElementById("menubutton");
+        if (elementToRemove)
+          elementToRemove.parentNode.removeChild(elementToRemove);
+        elementToRemove = iframeDocument.getElementById("fullscreen-button");
+        if (elementToRemove)
+          elementToRemove.parentNode.removeChild(elementToRemove);
+
+        // Create an array of button colors and corresponding actions
+        var buttons = [
+          { color: "blue", action: "Next", keyCode: 406 },
+          { color: "yellow", action: "Play", keyCode: 405 },
+          { color: "green", action: "Pause", keyCode: 404 },
+          { color: "red", action: "Previous", keyCode: 412 },
+        ];
+
+        // Function to simulate key press
+        function simulateKeyPress(keyCode) {
+          var eventObj = document.createEventObject
+            ? document.createEventObject()
+            : document.createEvent("Events");
+
+          if (eventObj.initEvent) {
+            eventObj.initEvent("keydown", true, true);
+          }
+
+          eventObj.keyCode = keyCode;
+          eventObj.which = keyCode;
+
+          document.dispatchEvent
+            ? document.dispatchEvent(eventObj)
+            : document.fireEvent("onkeydown", eventObj);
+        }
+
+        // Create and add buttons to the iframe document
+        buttons.forEach(function (button) {
+          var buttonElement = iframeDocument.createElement("button");
+          buttonElement.style.backgroundColor = button.color;
+          buttonElement.textContent = button.action; // Capitalize action
+          buttonElement.style.width = "100px"; // Set width
+          buttonElement.style.height = "50px"; // Set height
+          buttonElement.style.marginRight = "10px"; // Add margin between buttons
+          buttonElement.style.fontSize = "16px"; // Set font size
+          buttonElement.style.border = "none"; // Remove border
+          buttonElement.style.borderRadius = "5px"; // Add border radius
+          buttonElement.style.color = "white"; // Set text color
+          buttonElement.style.cursor = "pointer"; // Change cursor on hover
+          buttonElement.style.textShadow =
+            "-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000";
+
+          // Add onclick event handler
+          buttonElement.onclick = function () {
+            // Simulate key press
+            simulateKeyPress(button.keyCode);
+            console.log(
+              "Button clicked: " +
+                button.action +
+                ", simulated key press: " +
+                button.keyCode
+            );
+          };
+
+          // Get the skip-left button element
+          var skipLeftButton = iframeDocument.getElementById("skip-left");
+
+          // Insert the new button after the skip-left button
+          skipLeftButton.parentNode.insertBefore(
+            buttonElement,
+            skipLeftButton.nextSibling
+          );
+        });
+        const script = document.createElement("script");
+        script.type = "text/javascript";
+        script.text = `
+	window.addEventListener('message', function(event) {
+		var video = document.querySelector('video');
+		if (event.data.type === 'pause-video') {
+			pauseVideo()
+		} else if (event.data.type === 'play-video') {
+			playVideo()
+		} else if (event.data.type === 'toggle-play-pause') {
+			if (video) {
+				if (video.paused) {
+					playVideo()
+				} else {
+					pauseVideo()
+				}
+			}
+		} else if (event.data.type === 'get-new-video') {
+				getNewVideo(true);
+		} else if (event.data.type === 'go-back') {
+			window.history.back();
+		}
+	});
+`;
+        iframe.contentDocument.body.appendChild(script);
+      }
+
+      // Inject script into iframe when it loads or reloads
+      const iframe = document.getElementById("openingsMoeIframe");
+      iframe.onload = injectScriptIntoIframe;
+
+      // Add a mutation observer to detect iframe reloads
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "src"
+          ) {
+            iframe.onload = injectScriptIntoIframe;
+          }
+        });
+      });
+
+      observer.observe(iframe, {
+        attributes: true,
+      });
+    </script>
+  </body>
+</html>

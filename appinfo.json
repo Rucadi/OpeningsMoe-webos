@@ -1,0 +1,10 @@
+{
+  "id": "moe.openings.app",
+  "version": "1.0.0",
+  "vendor": "Openings Moe",
+  "type": "web",
+  "main": "index.html",
+  "title": "Openings Moe",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png"
+}
