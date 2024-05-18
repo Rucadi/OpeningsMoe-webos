@@ -119,7 +119,11 @@
         const iframe = document.getElementById("openingsMoeIframe");
         // Access the content window of the iframe
         var iframeContent = iframe.contentWindow || iframe.contentDocument;
-
+		iframeContent.inIFrame = false;
+		iframeContent.onend = function onend() {
+			simulateKeyPress(406);
+		};
+		iframeContent.onload();
         // Access the document inside the iframe
         var iframeDocument = iframeContent.document || iframeContent;
 
