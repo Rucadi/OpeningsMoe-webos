@@ -11,7 +11,7 @@ Openings Moe - webOS is a project designed to provide a seamless experience for 
 
 To utilize Openings Moe - webOS on your LG TV, follow these simple steps:
 
-1. **Installation:** Install the Openings Moe - webOS application on your LG webOS TV using [webOs Dev Manager ](https://github.com/webosbrew/dev-manager-desktop)
+1. **Installation:** Install the [Openings Moe - webOS application](https://github.com/Rucadi/OpeningsMoe-webos/releases/download/1.0.0/moe.openings.app_1.0.0_all.ipk) on your LG webOS TV using [webOs Dev Manager ](https://github.com/webosbrew/dev-manager-desktop)
    
 2. **Launch the Application:** Once installed, launch the application from your TV's home screen or app menu.
 
@@ -20,11 +20,10 @@ To utilize Openings Moe - webOS on your LG TV, follow these simple steps:
 ## Screenshots
 
 ![Screenshot](https://github.com/Rucadi/OpeningsMoe-webos/assets/6445619/445e3744-25b2-4a15-a399-d7689815557c)
-*(Include screenshots showcasing the application interface and functionality, if available)*
 
 ## Contributing
 
-Contributions to Openings Moe - webOS are welcome! Whether you're interested in adding new features, fixing bugs, or improving documentation, feel free to contribute to the project. Check out the [contributing guidelines](CONTRIBUTING.md) for more information.
+Contributions to Openings Moe - webOS are welcome! Whether you're interested in adding new features, fixing bugs, or improving documentation, feel free to contribute to the project. 
 
 ## License
 
