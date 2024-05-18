@@ -54,58 +54,20 @@
             event.keyCode == 404
           ) {
             // Key code 19 is for the play/pause key 404 green button
-            iframe.contentWindow.postMessage(
-              {
-                type: "toggle-play-pause",
-              },
-              "*"
-            );
+            iframe.contentWindow.playPause();
           } else if (event.keyCode === 415 || event.keyCode == 405) {
             // Key code 415 is for the play button 405 yellow button
-            iframe.contentWindow.postMessage(
-              {
-                type: "play-video",
-              },
-              "*"
-            );
+			iframe.contentWindow.playVideo();
+
           } else if (event.keyCode === 178 || event.keyCode == 413) {
             // Key code 178 is for the pause key
-            iframe.contentWindow.postMessage(
-              {
-                type: "pause-video",
-              },
-              "*"
-            );
+            iframe.contentWindow.pauseVideo();
           } else if ((event.keyCode === 417) | (event.keyCode == 406)) {
             // Key code 417 is for the next button 406 blue button
-            iframe.contentWindow.postMessage(
-              {
-                type: "get-new-video",
-              },
-              "*"
-            );
+            iframe.contentWindow.getNewVideo(true);
           } else if (event.keyCode === 412 || event.keyCode == 403) {
             // Key code 412 is for the back button 403 red button
-            iframe.contentWindow.postMessage(
-              {
-                type: "go-back",
-              },
-              "*"
-            );
-          } else {
-            iframe.contentWindow.postMessage(
-              {
-                type: "keyboard-event",
-                key: event.key,
-                keyCode: event.keyCode,
-                code: event.code,
-                ctrlKey: event.ctrlKey,
-                shiftKey: event.shiftKey,
-                altKey: event.altKey,
-                metaKey: event.metaKey,
-              },
-              "*"
-            );
+            iframe.contentWindow.history.back();
           }
         }
       }
@@ -119,14 +81,9 @@
         const iframe = document.getElementById("openingsMoeIframe");
         // Access the content window of the iframe
         var iframeContent = iframe.contentWindow || iframe.contentDocument;
-		iframeContent.inIFrame = false;
-		iframeContent.onend = function onend() {
-			simulateKeyPress(406);
-		};
-		iframeContent.onload();
         // Access the document inside the iframe
         var iframeDocument = iframeContent.document || iframeContent;
-
+		iframeContent.onend = function(){};
         // Find the element with id "menubutton" inside the iframe
         var elementToRemove = iframeDocument.getElementById("menubutton");
         if (elementToRemove)
@@ -198,52 +155,45 @@
             skipLeftButton.nextSibling
           );
         });
+
         const script = document.createElement("script");
         script.type = "text/javascript";
         script.text = `
-	window.addEventListener('message', function(event) {
-		var video = document.querySelector('video');
-		if (event.data.type === 'pause-video') {
-			pauseVideo()
-		} else if (event.data.type === 'play-video') {
-			playVideo()
-		} else if (event.data.type === 'toggle-play-pause') {
-			if (video) {
-				if (video.paused) {
-					playVideo()
-				} else {
-					pauseVideo()
-				}
-			}
-		} else if (event.data.type === 'get-new-video') {
-				getNewVideo(true);
-		} else if (event.data.type === 'go-back') {
-			window.history.back();
+		document.querySelector('video').addEventListener('ended',myHandler,false);
+		function myHandler(e) {
+			getNewVideo(true);
 		}
-	});
-`;
+		
+		document.addEventListener("keydown", function(event) {
+			if (
+				event.code === "MediaPlayPause" ||
+				event.keyCode === 19 ||
+				event.keyCode == 404
+			  ) {
+				// Key code 19 is for the play/pause key 404 green button
+				playPause();
+			  } else if (event.keyCode === 415 || event.keyCode == 405) {
+				// Key code 415 is for the play button 405 yellow button
+				playVideo(true);
+		
+			  } else if (event.keyCode === 178 || event.keyCode == 413) {
+				// Key code 178 is for the pause key
+				pauseVideo();
+			  } else if ((event.keyCode === 417) | (event.keyCode == 406)) {
+				// Key code 417 is for the next button 406 blue button
+				getNewVideo(true);
+			  } else if (event.keyCode === 412 || event.keyCode == 403) {
+				// Key code 412 is for the back button 403 red button
+				window.history.back();
+			  }
+		});
+		`;
         iframe.contentDocument.body.appendChild(script);
+		document.addEventListener("keydown", forwardEventToIframe);
       }
-
       // Inject script into iframe when it loads or reloads
       const iframe = document.getElementById("openingsMoeIframe");
       iframe.onload = injectScriptIntoIframe;
-
-      // Add a mutation observer to detect iframe reloads
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (
-            mutation.type === "attributes" &&
-            mutation.attributeName === "src"
-          ) {
-            iframe.onload = injectScriptIntoIframe;
-          }
-        });
-      });
-
-      observer.observe(iframe, {
-        attributes: true,
-      });
     </script>
   </body>
 </html>
