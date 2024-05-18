@@ -1,6 +1,6 @@
 {
   "id": "moe.openings.app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "vendor": "Openings Moe",
   "type": "web",
   "main": "index.html",
