@@ -29,22 +29,7 @@
       height="100%"
     ></iframe>
 
-    <script src="webOSTVjs-1.2.10/webOSTV.js" charset="utf-8"></script>
-    <script src="webOSTVjs-1.2.10/webOSTV-dev.js" charset="utf-8"></script>
     <script type="text/javascript">
-      // Sample code for calling LS2 API
-      webOS.service.request("luna://com.palm.systemservice", {
-        method: "clock/getTime",
-        parameters: {},
-        onSuccess: function (args) {
-          console.log("UTC:", args.utc);
-        },
-        onFailure: function (args) {
-          console.log("Failed to getTime");
-        },
-      });
-
-      // Function to forward keyboard events to the iframe and handle specific keys
       function forwardEventToIframe(event) {
         const iframe = document.getElementById("openingsMoeIframe");
         if (iframe && iframe.contentWindow) {
